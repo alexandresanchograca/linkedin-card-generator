@@ -1,0 +1,155 @@
+/* Print CSS */
+@media print {
+  body * {
+    visibility: hidden; /* Hides everything by default */
+  }
+
+  .profile-card,
+  .profile-card * {
+    visibility: visible; /* Shows only the profile card and its sub-children */
+  }
+
+  .profile-card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%; /* Feel free to adjust this as needed */
+    max-width: 800px; /* Optional: Adjust based on your print-friendly width */
+    padding: 20px; /* Ensures no textual elements are cut at the print margins */
+    font-size: 12pt; /* Boost text sizes for better legibility in print */
+    color: black; /* Convert all font colors to black for better cost efficiency and print accuracy */
+    box-shadow: none; /* Removse drop shadows as they don't print well */
+    background-color: transparent !important; /* This can help ensure the document's background doesn't impact print */
+  }
+
+  img {
+    max-width: 100% !important; /* Ensures large images are scaled down to fit the page width */
+    height: auto !important; /* Makes height automatic for aspect ratio maintenance */
+  }
+}
+
+.card {
+  width: 900px;
+}
+
+.profile-card,
+.profile-card * {
+  visibility: visible; /* Shows only the profile card and its sub-children */
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 800;
+  margin: auto;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  visibility: visible;
+}
+
+#qr-img{
+  position: absolute;
+  right: 0;
+  top: 18%;
+  padding: 20px;
+}
+
+.background-img {
+  width: auto;
+  height: 225px; /* Adjust the height as needed */
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  margin-top: -160px; /* Adjust based on the profile-img size */
+}
+
+.profile-img {
+  display: flex;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 4px solid white;
+  margin-left: 20px;
+}
+
+.profile-desc {
+  display: flex;
+  width: auto;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  margin-right: 0px;
+  margin-top: 25px;
+  padding: 0px;
+  color: black;
+}
+
+.profile-name {
+  margin: 0px;
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.profile-desc-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.profile-desc {
+  width: 55%;
+}
+
+.profile-about {
+  margin: 0px;
+  font-size: x-large;
+}
+
+.companies {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.company-img {
+  font-weight: bold;
+  margin: 0px;
+  border-radius: 50%;
+}
+
+.company-name {
+  font-weight: bold;
+  color: black;
+  margin: 0px;
+  padding: 0px;
+}
+
+#job-role {
+  color: black;
+  font-size: x-large;
+  font-weight: normal;
+}
+
+p {
+  margin: 0px;
+}
+
+#url-input {
+  width: 400px;
+  margin: 10px;
+}
+
+.user-input {
+  width: 400px;
+  margin: 10px;
+}
+
