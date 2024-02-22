@@ -173,7 +173,7 @@ function InputPassword({ setUserPassword }) {
   );
 }
 
-function InputAuthToken({ setAuthToken, inputValue, setInputValue }) {
+function InputAuthToken({ setAuthToken, inputValue}) {
   return (
     <div className="token-path">
       <label>Auth Token: </label>
