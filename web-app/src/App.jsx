@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import QRCode from 'react-qr-code';
+import QRCode from "react-qr-code";
 import "./App.css";
 import "./profilestyle.css";
 
@@ -11,8 +11,11 @@ function App() {
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [jobRole, setJobRole] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  async function postAuth(data = {username : userEmail, password : userPassword}) {
+  async function postAuth(
+    data = { username: userEmail, password: userPassword }
+  ) {
     const response = await fetch(`http://127.0.0.1:8091/`, {
       method: "POST",
       mode: "cors", // no-cors, *cors, same-origin
@@ -25,47 +28,49 @@ function App() {
       referrerPolicy: "no-referrer-when-downgrade", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
       body: JSON.stringify(data), // body data type must match "Content-Type" header
     });
-    
+
     response.json().then(
       (resp) => {
         setAuthToken("Bearer " + resp.token);
+        setLoggedIn(true);
       },
       (resp) => {
         setAuthToken("Failed to get valid response.");
-      },
+      }
     );
   }
 
   async function getData(profile_user = "") {
-
     const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json');
-    myHeaders.append('Authorization', authToken);
-    
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", authToken);
+
     const response = await fetch(`http://127.0.0.1:8091/${profile_user}`, {
-      method: 'GET',
+      method: "GET",
       headers: myHeaders,
-    })
-    
+    });
+
     response.json().then(
       (resp) => {
         setProfileInfo(resp);
       },
       (resp) => {
         setProfileInfo("Failed to get valid response.");
-      },
+      }
     );
   }
-  
-  function ProfileCard(){
 
-    if(!profileInfo){
-      return (<></>)
+  function ProfileCard() {
+    if (!profileInfo) {
+      return <></>;
     }
 
     return (
       <div className="profile-card">
-        <QRCodeImg url_value={`https://www.linkedin.com/in/${linkedInPath}`} qr_img_size={130} />
+        <QRCodeImg
+          url_value={`https://www.linkedin.com/in/${linkedInPath}`}
+          qr_img_size={130}
+        />
         <img
           className="background-img"
           src={profileInfo.cover_img}
@@ -85,8 +90,8 @@ function App() {
             <p className="profile-about">{profileInfo.profile_about}</p>
           </div>
           <RenderCompanies companies={profileInfo.company_img_title} />
-          </div>
         </div>
+      </div>
     );
   }
 
@@ -96,23 +101,12 @@ function App() {
       <div className="card">
         <InputEmail setUserEmail={setUserEmail} />
         <InputPassword setUserPassword={setUserPassword} />
-        <button
-          onClick={() =>
-            postAuth()
-          }
-        >
-          Authenticate
-        </button>
+        <button onClick={() => postAuth()}>Authenticate</button>
+        <LoggedIn loggedIn={loggedIn} />
         <InputAuthToken setAuthToken={setAuthToken} />
         <p>{authToken}</p>
         <InputData setLinkedInPath={setLinkedInPath} />
-        <button
-          onClick={() =>
-            getData(linkedInPath)
-          }
-        >
-          Build Card
-        </button>
+        <button onClick={() => getData(linkedInPath)}>Build Card</button>
       </div>
       <div className="card">
         <ProfileCard />
@@ -122,7 +116,6 @@ function App() {
     </>
   );
 }
-
 
 function InputData({ setLinkedInPath }) {
   return (
@@ -180,21 +173,41 @@ function InputPassword({ setUserPassword }) {
   );
 }
 
-function InputAuthToken({ setAuthToken }) {
+function InputAuthToken({ setAuthToken, inputValue, setInputValue }) {
   return (
     <div className="token-path">
       <label>Auth Token: </label>
       <input
         type="text"
+        id="auth-token"
         className="user-input"
-        onChange={(elem) => setAuthToken("Bearer " + elem.target.value)}
+        onChange={(elem) => {
+          setAuthToken("Bearer " + elem.target.value);
+        }}
+        value={inputValue}
         required
       />
     </div>
   );
 }
 
-function RenderCompanies({companies}) {
+function LoggedIn({ loggedIn }) {
+  if (!loggedIn) {
+    return (
+      <>
+        <p color="green">No active session...</p>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <p color="green">Sucessfully logged in!</p>
+    </>
+  );
+}
+
+function RenderCompanies({ companies }) {
   return (
     <div className="companies">
       {companies.map((company) => {

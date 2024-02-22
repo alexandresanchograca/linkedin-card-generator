@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::error::Error;
-use std::process::exit;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -103,6 +102,17 @@ pub async fn log_in(email: &str, password : &str) -> Result<WebDriver, Box<dyn E
         Ok(res) => {
             driver.close_window();
             return Err(Box::new(CustomError("{ \"error:\" \"Failed Login\" }".to_string())));
+        },
+        Err(e) => (),
+    }
+
+    //Verify if there is a captcha
+    thread::sleep(Duration::from_secs(3));
+    match driver.find(By::Css("#captcha-internal")).await {
+        Ok(res) => { //captcha detected
+            //We could sleep until capsolver does the job?
+            //driver.close_window();
+            //return Err(Box::new(CustomError("{ \"error:\" \"Failed Login\" }".to_string())));
         },
         Err(e) => (),
     }
