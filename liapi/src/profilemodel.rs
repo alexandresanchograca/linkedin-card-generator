@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize, Serializer};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Claims {
     pub email: String,
-    pub expiration: i64,
+    pub exp: usize,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

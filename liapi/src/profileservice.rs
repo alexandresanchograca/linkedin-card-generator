@@ -1,5 +1,7 @@
+use std::collections::HashMap;
 use std::error::Error;
 use std::process::exit;
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 use actix_web::web;
@@ -12,29 +14,34 @@ use thirtyfour::{
     By, DesiredCapabilities, WebDriver, WebElement,
 };
 use thirtyfour::error::WebDriverError::CustomError;
+use tokio::sync::Mutex;
 
 use url::Url;
-use crate::HashMapContainer;
 use crate::profilemodel::{Claims, CompanyTab, LinkedinProfile};
 
 const cover_img_backup : &str = "https://media.licdn.com/dms/image/D5616AQHy2R5tyt2YUA/profile-displaybackgroundimage-shrink_350_1400/0/1672782785474?e=1714003200&v=beta&t=8JmCSYDe5hRg3W_vTilnopfQ5pKgPBdFMXtPt2s90gQ";
+const profile_img_backup : &str = "https://media.licdn.com/dms/image/D5603AQHv6LsdiUg1kw/profile-displayphoto-shrink_800_800/0/1695167344576?e=1714003200&v=beta&t=vELfI9Uzy7S96cZexfyBpkrEK5Bag2FvqiS9if5MIk4";
 
-pub async fn create_sesh(email: &str, password : &str, data: web::Data<HashMapContainer>) -> Result<(String), Box<dyn Error>> {
+pub async fn create_sesh(email: &str, password : &str, data: web::Data<Arc<Mutex<HashMap<String,WebDriver>>>>) -> Result<(String), Box<dyn Error>> {
 
     let email_str = email.clone().to_string();
 
-    let driver = log_in(email, password).await?;
+    let driver = match log_in(email, password).await{
+        Ok(res) => res,
+        Err(e) => {return Err(Box::new(CustomError(e.to_string())))}
+    };
 
     //Creating our JWT Token based off the email and password
-
-    let expiration = Utc::now()
+    let exp = Utc::now()
         .checked_add_signed(chrono::Duration::minutes(60))
         .expect("valid timestamp")
         .timestamp();
 
-    let claims = Claims{ email: email_str, expiration };
+    let exp : usize = exp as usize;
+
+    let claims = Claims{ email: email_str, exp};
     let jwt_secret = b"super_secret"; //Move this to be a const
-    let header = Header::new(Algorithm::HS512);
+    let header = Header::new(Algorithm::HS256);
 
     let mut key_json = String::from("{ \"token\": \"");
 
@@ -43,18 +50,18 @@ pub async fn create_sesh(email: &str, password : &str, data: web::Data<HashMapCo
     key_json.push_str(&key_value);
     key_json.push_str("\"}");
 
-    let mut map = data.0.lock().await;
+    let mut map = data.lock().await;
     map.insert(key_value, driver);
 
     Ok(key_json)
 }
 
-pub async fn scrape_sesh(username : &str, auth: BearerAuth, data: web::Data<HashMapContainer> ) -> Result<(String), Box<dyn Error>>{
+pub async fn scrape_sesh(username : &str, auth: BearerAuth, data: web::Data<Arc<Mutex<HashMap<String,WebDriver>>>> ) -> Result<(String), Box<dyn Error>>{
 
-    let mut map = data.0.lock().await;
+    let mut map = data.lock().await;
 
     if !map.contains_key(auth.token()) {
-        return Err(Box::new(CustomError("Failed Auth".to_string())));
+        return Err(Box::new(CustomError("{ \"error:\" \"Failed Auth\" }".to_string())));
     }
 
     let web_driver = map.get(auth.token()).unwrap();
@@ -92,7 +99,15 @@ pub async fn log_in(email: &str, password : &str) -> Result<WebDriver, Box<dyn E
 
     driver.find(By::Css("#organic-div > form > div.login__form_action_container > button")).await?.click().await?;
 
-    Result::Ok(driver)
+    match driver.find(By::Css("#error-for-password")).await {
+        Ok(res) => {
+            driver.close_window();
+            return Err(Box::new(CustomError("{ \"error:\" \"Failed Login\" }".to_string())));
+        },
+        Err(e) => (),
+    }
+
+    Ok(driver)
 }
 
 pub async fn sesh_scrape(driver: &WebDriver, user: &str) -> Result<LinkedinProfile, Box<dyn Error>> {
@@ -156,14 +171,14 @@ pub async fn sesh_scrape(driver: &WebDriver, user: &str) -> Result<LinkedinProfi
     }
 
     println!("Cover Image: {}", cover_img_value.clone().unwrap_or(cover_img_backup.to_string()));
-    println!("Profile Image: {}", profile_img_val.clone().unwrap());
+    println!("Profile Image: {}", profile_img_val.clone().unwrap_or(profile_img_backup.to_string()));
     println!("Profile Name: {}", profile_img_name.clone().unwrap());
     println!("Profile About: {}", profile_about_val);
     println!("Influencer Img: {}", influencer_img);
 
-    li_profile.cover_img = cover_img_value.unwrap();
-    li_profile.profile_img = profile_img_val.unwrap();
-    li_profile.profile_img_name = profile_img_name.unwrap();
+    li_profile.cover_img = cover_img_value.unwrap_or(cover_img_backup.to_string());
+    li_profile.profile_img = profile_img_val.unwrap_or(profile_img_backup.to_string());
+    li_profile.profile_img_name = profile_img_name.unwrap_or("John Doe".to_string());
     li_profile.profile_about = profile_about_val;
     li_profile.influencer_img = influencer_img;
 
