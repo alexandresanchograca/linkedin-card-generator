@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::thread;
 use std::time::Duration;
-use jsonwebtoken::{Algorithm, decode, DecodingKey, Validation};
+use jsonwebtoken::{decode, DecodingKey, Validation};
 use thirtyfour::WebDriver;
 use tokio::sync::Mutex;
 use crate::profilemodel::Claims;
@@ -22,19 +21,17 @@ pub async fn session_manager(map : Arc<Mutex<HashMap<String,WebDriver>>>){
                 &Validation::default(),
             );
             match decoded {
-                Ok(res) => (),
+                Ok(_res) => (),
                 Err(err) => {
                     println!("Token is invalid: {:?}, removing session.", err);
 
-                    match elem.1.close_window().await{
-                        Ok(res) => println!("Window closed sucessfully"),
+                    match elem.1.clone().quit().await {
+                        Ok(_res) => println!("Session closed sucessfully"),
                         Err(err) => println!("ERROR: {}", err),
                     }
-
                     l_map.remove(elem_token);
                 }
             };
-
         }
         drop(l_map);
         tokio::time::sleep(Duration::from_secs(10)).await;
