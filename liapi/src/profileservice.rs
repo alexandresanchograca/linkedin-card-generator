@@ -9,8 +9,8 @@ use chrono::Utc;
 use jsonwebtoken::{Algorithm, encode, EncodingKey, Header};
 
 use thirtyfour::{
-    prelude::{ElementWaitable, WebDriverError},
-    By, DesiredCapabilities, WebDriver, WebElement,
+    prelude::{ElementWaitable},
+    By, DesiredCapabilities, WebDriver, 
 };
 use thirtyfour::error::WebDriverError::CustomError;
 use tokio::sync::Mutex;
@@ -23,7 +23,7 @@ const profile_img_backup : &str = "https://media.licdn.com/dms/image/D5603AQHv6L
 
 pub async fn create_sesh(email: &str, password : &str, data: web::Data<Arc<Mutex<HashMap<String,WebDriver>>>>) -> Result<(String), Box<dyn Error>> {
 
-    let email_str = email.clone().to_string();
+    let email_str = email.to_string();
 
     let driver = match log_in(email, password).await{
         Ok(res) => res,
@@ -100,7 +100,7 @@ pub async fn log_in(email: &str, password : &str) -> Result<WebDriver, Box<dyn E
 
     match driver.find(By::Css("#error-for-password")).await {
         Ok(res) => {
-            driver.close_window();
+            driver.quit().await?;
             return Err(Box::new(CustomError("{ \"error:\" \"Failed Login\" }".to_string())));
         },
         Err(e) => (),
@@ -109,11 +109,12 @@ pub async fn log_in(email: &str, password : &str) -> Result<WebDriver, Box<dyn E
     //Verify if there is a captcha
     thread::sleep(Duration::from_secs(3));
     match driver.find(By::Css("#captcha-internal")).await {
-        Ok(res) => { //captcha detected
-            //driver.close_window();
-            //return Err(Box::new(CustomError("{ \"error:\" \"Failed Login\" }".to_string())));
+        Ok(_res) => { //captcha detected
+            //We can solve this by hand or using AI models
+            driver.quit().await?;
+            return Err(Box::new(CustomError("{ \"error:\" \"Captcha triggered, failed creating session\" }".to_string())));
         },
-        Err(e) => (),
+        Err(_e) => (),
     }
 
     Ok(driver)
