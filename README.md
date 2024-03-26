@@ -1,10 +1,10 @@
 # linkedin-card-generator
 
-The objective of this application is to scrape linked-in profiles and provide a printable business card.
+The objective of this application is to scrape a LinkedIn profile and provide a printable business. It creates a bussiness card with all the information present in the linkedin profile aswell as a QR code that direct's you to the person's profile page.
 
 ## Backend:
 
-A REST API that connects to Chromedriver and opens a new browser instance, allowing it to login to linkedin and scrape a user profile, returning the collected in a JSON format.
+A REST API that connects to Chromedriver and opens a new browser instance, allowing it to log in to LinkedIn and scrape a user profile, returning the collected in a JSON format.
 
 It supports two requests:
 
@@ -18,7 +18,7 @@ A JWT token will be generated for each instance, this token should be sent in ev
 
 ## Frontend:
 
-A React web application that sends requests to the backend API and builds a business card with the returned data. This card can be easily printed by right clicking the current page and using your browser built-in print functionality. The page elements will be automatically hidden when you do so. 
+A React web application that sends requests to the backend API and builds a business card with the returned data. This card can be easily printed by right-clicking the current page and using your browser's built-in print functionality. The page elements will be automatically hidden when you do so. 
 
 #### Dependencies:
 
@@ -28,7 +28,7 @@ You need to have a running instance of Chromedriver to run the scraper.
 You can find the latest release on:
 https://googlechromelabs.github.io/chrome-for-testing/
 
-Make sure your chromedriver is compatible with the current version of your chrome browser.
+Ensure your chromedriver is compatible with the current version of your Chrome browser.
 There may be issues with different versions other than the one that was used during testing.
 
 **Node.js**:
