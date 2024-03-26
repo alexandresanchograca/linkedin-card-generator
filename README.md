@@ -20,7 +20,7 @@ A JWT token will be generated for each instance, this token should be sent in ev
 
 A React web application that sends requests to the backend API and builds a business card with the returned data. This card can be easily printed by right-clicking the current page and using your browser's built-in print functionality. The page elements will be automatically hidden when you do so. 
 
-### Dependencies:
+## Dependencies:
 
 **ChromeDriver**: 
 You need to have a running instance of Chromedriver to run the scraper.
@@ -34,7 +34,7 @@ There may be issues with different versions other than the one that was used dur
 **Node.js**:
 You need to have Node installed in order to build and run the web-app.
 
-### Building and Running:
+## Building and Running:
 **API**: 
 In order to build the API you have to have Rust installed, I suggest you use [rustup](https://rustup.rs/) as it eases the process of installation.
 Go to the root folder of the api and execute: ```cargo run``` in order to build and run the API.
