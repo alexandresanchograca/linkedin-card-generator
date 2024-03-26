@@ -9,8 +9,8 @@ A REST API that connects to Chromedriver and opens a new browser instance, allow
 It supports two requests:
 
 - Login to linked-in in the current browser instance
-- Get profile info
-<br>(Check the web-app for request examples)
+- Get profile info <br>
+(Check the web-app for request examples)
 
 Created instances will persist for 60 minutes, after that they will be closed. If you wish to modify the way that browser instances are managed please do so in `sessionmanager.rs`
 
