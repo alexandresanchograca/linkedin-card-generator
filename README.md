@@ -20,7 +20,7 @@ A JWT token will be generated for each instance, this token should be sent in ev
 
 A React web application that sends requests to the backend API and builds a business card with the returned data. This card can be easily printed by right-clicking the current page and using your browser's built-in print functionality. The page elements will be automatically hidden when you do so. 
 
-#### Dependencies:
+### Dependencies:
 
 **ChromeDriver**: 
 You need to have a running instance of Chromedriver to run the scraper.
