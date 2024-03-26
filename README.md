@@ -10,7 +10,7 @@ It supports two requests:
 
 - Login to linked-in in the current browser instance
 - Get profile info
-(Check the web-app for request examples)
+<br>(Check the web-app for request examples)
 
 Created instances will persist for 60 minutes, after that they will be closed. If you wish to modify the way that browser instances are managed please do so in `sessionmanager.rs`
 
