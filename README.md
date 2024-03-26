@@ -7,10 +7,9 @@ The objective of this application is to scrape a LinkedIn profile and provide a 
 A REST API that connects to Chromedriver and opens a new browser instance, allowing it to log in to LinkedIn and scrape a user profile, returning the collected in a JSON format.
 
 It supports two requests:
-
-- Login to linked-in in the current browser instance
-- Get profile info <br>
 (Check the web-app for request examples)
+- Login to linked-in in the current browser instance
+- Get profile info
 
 Created instances will persist for 60 minutes, after that they will be closed. If you wish to modify the way that browser instances are managed please do so in `sessionmanager.rs`
 
