@@ -21,7 +21,7 @@ function App() {
   async function postAuth(
     data = { username: userEmail, password: userPassword }
   ) {
-    const response = await fetch(`http://192.168.50.227:27014/`, {
+    const response = await fetch(`http://127.0.0.1:27014/`, {
       method: "POST",
       mode: "cors", // no-cors, *cors, same-origin
       cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -63,7 +63,7 @@ function App() {
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", authToken);
 
-    const response = await fetch(`http://192.168.50.227:27014/${profile_user}`, {
+    const response = await fetch(`http://127.0.0.1:27014/${profile_user}`, {
       method: "GET",
       headers: myHeaders,
     });
