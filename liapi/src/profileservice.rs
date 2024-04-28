@@ -18,8 +18,8 @@ use tokio::sync::Mutex;
 use url::Url;
 use crate::profilemodel::{Claims, CompanyTab, LinkedinProfile};
 
-const cover_img_backup : &str = "https://media.licdn.com/dms/image/D5616AQHy2R5tyt2YUA/profile-displaybackgroundimage-shrink_350_1400/0/1672782785474?e=1714003200&v=beta&t=8JmCSYDe5hRg3W_vTilnopfQ5pKgPBdFMXtPt2s90gQ";
-const profile_img_backup : &str = "https://media.licdn.com/dms/image/D5603AQHv6LsdiUg1kw/profile-displayphoto-shrink_800_800/0/1695167344576?e=1714003200&v=beta&t=vELfI9Uzy7S96cZexfyBpkrEK5Bag2FvqiS9if5MIk4";
+const cover_img_backup : &str = "";
+const profile_img_backup : &str = "";
 
 pub async fn create_sesh(email: &str, password : &str, data: web::Data<Arc<Mutex<HashMap<String,WebDriver>>>>) -> Result<(String), Box<dyn Error>> {
 
@@ -139,7 +139,7 @@ pub async fn sesh_scrape(driver: &WebDriver, user: &str) -> Result<LinkedinProfi
     let profile_content_selector = driver.find(By::Css(r"#profile-content")).await?;
     let profile_ph5 = profile_content_selector.find(By::Css(r"div.ph5.pb5")).await?;
 
-    let profile_img_selector = profile_ph5.find(By::Css(r"div.display-flex > div.pv-top-card--photo.text-align-left.pv-top-card--photo-resize > div")).await?;
+    let profile_img_selector = profile_ph5.find(By::Css(r"div.display-flex")).await?;
     let profile_img_selector = profile_img_selector.find(By::Css(r"img")).await?;
     let profile_img_val = profile_img_selector.attr("src").await?;
     let profile_img_name = profile_img_selector.attr("title").await?;
@@ -169,7 +169,13 @@ pub async fn sesh_scrape(driver: &WebDriver, user: &str) -> Result<LinkedinProfi
     }
 
 
-    let experiences = driver.find(By::Css("#profile-content > div > div.scaffold-layout.scaffold-layout--breakpoint-xl.scaffold-layout--main-aside.scaffold-layout--reflow.pv-profile > div > div > main")).await?;
+    //let experiences = driver.find(By::Css("#profile-content > div > div.scaffold-layout.scaffold-layout--breakpoint-xl.scaffold-layout--main-aside.scaffold-layout--reflow.pv-profile > div > div > main")).await?;
+
+
+    let experiences = profile_content_selector.find(By::Css(r"main")).await?;
+
+
+
     let experiences = experiences.find_all(By::Css("div.pvs-list__outer-container > ul > li")).await?;
 
     for experience in experiences{

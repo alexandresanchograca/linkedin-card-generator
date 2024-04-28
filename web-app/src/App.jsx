@@ -1,8 +1,13 @@
 /* eslint-disable react/prop-types */
+import html2canvas from 'html2canvas';
 import { useState } from "react";
 import QRCode from "react-qr-code";
 import "./App.css";
+import placeholderCover from './assets/placeholder.jpeg';
+import placeholderProfile from './assets/profileplaceholder.jpeg';
+
 import "./profilestyle.css";
+
 
 function App() {
   const [profileInfo, setProfileInfo] = useState(null);
@@ -16,7 +21,7 @@ function App() {
   async function postAuth(
     data = { username: userEmail, password: userPassword }
   ) {
-    const response = await fetch(`http://127.0.0.1:8091/`, {
+    const response = await fetch(`http://192.168.50.227:27014/`, {
       method: "POST",
       mode: "cors", // no-cors, *cors, same-origin
       cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
@@ -40,12 +45,25 @@ function App() {
     );
   }
 
+  function captureProfileCard() {
+    const cardElement = document.querySelector('.profile-card');
+    html2canvas(cardElement, { useCORS: true, scale: 2 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'profile-card.png';
+        link.href = imgData;
+        link.click();
+      })
+      .catch(err => console.error('Error capturing canvas:', err));
+  }
+
   async function getData(profile_user = "") {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", authToken);
 
-    const response = await fetch(`http://127.0.0.1:8091/${profile_user}`, {
+    const response = await fetch(`http://192.168.50.227:27014/${profile_user}`, {
       method: "GET",
       headers: myHeaders,
     });
@@ -63,6 +81,14 @@ function App() {
   function ProfileCard() {
     if (!profileInfo) {
       return <></>;
+    }
+
+    if(!profileInfo.cover_img){
+      profileInfo.cover_img = placeholderCover;
+    }
+
+    if(!profileInfo.profile_img){
+      profileInfo.profile_img = placeholderProfile;
     }
 
     return (
@@ -111,6 +137,7 @@ function App() {
       <div className="card">
         <ProfileCard />
         <InputJobRole setJobRole={setJobRole} />
+        <button onClick={captureProfileCard}>Download Profile Card</button>
       </div>
       <p className="more-info">No support available.</p>
     </>

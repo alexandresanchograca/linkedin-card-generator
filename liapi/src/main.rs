@@ -36,7 +36,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_profile_info)
             .service(create_user_session)
     })
-        .bind(("127.0.0.1", 8091))?
+        .bind(("192.168.50.227", 27014))?
         .run()
         .await
 }
